@@ -142,6 +142,54 @@ The `ww3_functions.sh` script is sourced automatically on every `pixi shell` act
 
 The `if [[ "${BASH_SOURCE[0]}" == "${0}" ]]` block at the bottom of `ww3_functions.sh` is the **standalone driver** and shows the canonical execution order:
 
+```mermaid
+flowchart TD
+    subgraph P1["Phase 1 — Grid preparation"]
+        direction LR
+        G1[prepare_grid_nml\nglobal]
+        G2[prepare_grid_nml\nsouthatl]
+        G3[prepare_grid_nml\nwind]
+        G4[prepare_grid_nml\nice]
+        G5[prepare_grid_inp\npoints.global]
+    end
+
+    MD["mod_def.global · mod_def.southatl · mod_def.wind · mod_def.ice · mod_def.points"]
+
+    subgraph P2["Phase 2 — Forcing data"]
+        direction LR
+        F1[prepare_input_data_nml\nwind → wind.wind]
+        F2[prepare_input_data_nml\nice → ice.ice]
+    end
+
+    subgraph P3["Phase 3 — Multi-grid run"]
+        M[run_model_multi\nww3_multi · 20 MPI ranks]
+    end
+
+    subgraph P4["Phase 4 — Post-processing"]
+        E1[export_data_nc\nglobal]
+        E2[export_data_nc\nsouthatl]
+        E3[export_data_pt\npoints]
+        UL[unlink_files]
+    end
+
+    subgraph P5["Phase 5 — Unstructured nest"]
+        SG[prepare_grid_nml\nsaopaulo]
+        BC[create_boundaries_unstr\nsaopaulo]
+        FW[prepare_input_data_nml\nwind]
+        RU[run_model_unstr\nww3_shel · 8 MPI ranks]
+        EU[export_data_nc\nsaopaulo]
+    end
+
+    G1 & G2 & G3 & G4 & G5 --> MD
+    MD --> F1 & F2
+    F1 & F2 --> M
+    M --> E1 & E2 & E3
+    E1 & E2 & E3 --> UL
+    UL --> P5
+    SG --> BC --> FW --> RU --> EU
+```
+
+
 ```
 prepare_grid_nml  global southatl wind ice
 prepare_grid_inp  points.global
