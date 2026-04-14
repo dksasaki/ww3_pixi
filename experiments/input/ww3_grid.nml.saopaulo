@@ -1,0 +1,79 @@
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - ww3_grid.nml - Grid pre-processing                   !
+! -------------------------------------------------------------------- !
+
+&SPECTRUM_NML
+  SPECTRUM%XFR           =  1.1
+  SPECTRUM%FREQ1         =  0.0373
+  SPECTRUM%NK            =  32
+  SPECTRUM%NTH           =  24
+  SPECTRUM%THOFF         =  0.
+/
+
+&RUN_NML
+  RUN%FLCX            = T
+  RUN%FLCY            = T
+  RUN%FLCTH           = T
+  RUN%FLCK            = T
+  RUN%FLSOU           = T
+/
+
+&TIMESTEPS_NML
+  TIMESTEPS%DTMAX         =  3600.
+  TIMESTEPS%DTXY          =   100.
+  TIMESTEPS%DTKTH         =    50.
+  TIMESTEPS%DTMIN         =    10.
+/
+
+&GRID_NML
+  GRID%NAME              =  'Sao Paulo'
+  GRID%NML               =  'namelists.nml'
+  GRID%TYPE              =  'UNST'
+  GRID%COORD             =  'SPHE'
+  GRID%CLOS              =  'NONE'
+  GRID%ZLIM              =  4.0
+  GRID%DMIN              =  0.30
+/
+
+&UNST_NML
+  UNST%SF                =  -1.
+  UNST%FILENAME          =  '../data_inp/saopaulo.msh'
+  UNST%IDF               =  20
+  UNST%IDLA              =  4
+  UNST%IDFM              =  1
+  UNST%FORMAT            =  '(20f10.2)'
+/
+
+&MASK_NML
+  MASK%FILENAME          =  'mapsta.inp'
+  MASK%IDF               =  10
+  MASK%IDLA              =  3
+  MASK%IDFM              =  1
+  MASK%FORMAT            =  '(....)'
+/
+
+&INBND_COUNT_NML
+  INBND_COUNT%N_POINT    = 1
+/
+&INBND_POINT_NML
+  INBND_POINT(1)         = 1 23 T
+/
+
+&EXCL_COUNT_NML
+  EXCL_COUNT%N_POINT     = 0
+  EXCL_COUNT%N_BODY      = 0
+/
+&EXCL_POINT_NML
+/
+&EXCL_BODY_NML
+/
+
+&OUTBND_COUNT_NML
+  OUTBND_COUNT%N_LINE    = 0
+/
+&OUTBND_LINE_NML
+/
+
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - end of namelist                                      !
+! -------------------------------------------------------------------- !

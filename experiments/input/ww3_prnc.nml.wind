@@ -1,0 +1,22 @@
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - ww3_prnc.nml - Field preprocessor                    !
+! -------------------------------------------------------------------- !
+
+&FORCING_NML
+  FORCING%TIMESTART         = '20091001 000000'
+  FORCING%TIMESTOP          = '20091001 090000'
+  FORCING%FIELD%WINDS       = T
+  FORCING%GRID%LATLON       = T
+/
+
+&FILE_NML
+  FILE%FILENAME      = 'wind.nc'
+  FILE%LONGITUDE     = 'longitude'
+  FILE%LATITUDE      = 'latitude'
+  FILE%VAR(1)        = 'UGRD_10maboveground'
+  FILE%VAR(2)        = 'VGRD_10maboveground'
+/
+
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - end of namelist                                      !
+! -------------------------------------------------------------------- !

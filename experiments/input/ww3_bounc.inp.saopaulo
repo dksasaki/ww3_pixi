@@ -1,0 +1,45 @@
+$ -------------------------------------------------------------------- $
+$ WAVEWATCH III NetCDF boundary input processing                       $
+$--------------------------------------------------------------------- $
+$
+$ Boundary option: READ or WRITE
+$
+ WRITE
+$
+$ Interpolation method: 1: nearest
+$                       2: linear interpolation
+ 1
+$ Verbose (0, 1, 2)
+1
+$
+$ List of spectra files. These NetCDF files use the WAVEWATCH III
+$ format as described in the ww3_ounp.inp file. The files are
+$ defined relative to the directory in which the program is run.
+$
+../boundary/ww3.BOUND001_20091001_spec.nc
+../boundary/ww3.BOUND002_20091001_spec.nc
+../boundary/ww3.BOUND003_20091001_spec.nc
+../boundary/ww3.BOUND004_20091001_spec.nc
+../boundary/ww3.BOUND005_20091001_spec.nc
+../boundary/ww3.BOUND006_20091001_spec.nc
+../boundary/ww3.BOUND007_20091001_spec.nc
+../boundary/ww3.BOUND008_20091001_spec.nc
+../boundary/ww3.BOUND009_20091001_spec.nc
+../boundary/ww3.BOUND010_20091001_spec.nc
+../boundary/ww3.BOUND011_20091001_spec.nc
+../boundary/ww3.BOUND012_20091001_spec.nc
+../boundary/ww3.BOUND013_20091001_spec.nc
+../boundary/ww3.BOUND014_20091001_spec.nc
+../boundary/ww3.BOUND015_20091001_spec.nc
+../boundary/ww3.BOUND016_20091001_spec.nc
+../boundary/ww3.BOUND017_20091001_spec.nc
+../boundary/ww3.BOUND018_20091001_spec.nc
+../boundary/ww3.BOUND019_20091001_spec.nc
+../boundary/ww3.BOUND020_20091001_spec.nc
+../boundary/ww3.BOUND021_20091001_spec.nc
+../boundary/ww3.BOUND022_20091001_spec.nc
+'STOPSTRING'
+$
+$ -------------------------------------------------------------------- $
+$ End of input file                                                    $
+$ -------------------------------------------------------------------- $

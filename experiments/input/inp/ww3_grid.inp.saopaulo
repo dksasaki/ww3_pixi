@@ -1,0 +1,136 @@
+$ -------------------------------------------------------------------- $
+$ WAVEWATCH III Grid preprocessor input file                           $
+$ -------------------------------------------------------------------- $
+$ Grid name (C*30, in quotes)
+$
+  'Sao Paulo'
+$
+$ Frequency increment factor and first frequency (Hz) ---------------- $
+$ number of frequencies (wavenumbers) and directions, relative offset
+$ of first direction in terms of the directional increment [-0.5,0.5].
+$ In versions 1.18 and 2.22 of the model this value was by definiton 0,
+$ it is added to mitigate the GSE for a first order scheme. Note that
+$ this factor is IGNORED in the print plots in ww3_outp.
+$
+1.1 0.0373 32 24 0.
+$
+$ Set model flags ---------------------------------------------------- $
+$  - FLDRY         Dry run (input/output only, no calculation).
+$  - FLCX, FLCY    Activate X and Y component of propagation.
+$  - FLCTH, FLCK   Activate direction and wavenumber shifts.
+$  - FLSOU         Activate source terms.
+$
+   F T T T T T
+$
+$ Set time steps ----------------------------------------------------- $
+$ - Time step information (this information is always read)
+$     maximum global time step, maximum CFL time step for x-y and
+$     k-theta, minimum source term time step (all in seconds).
+$
+   3600. 100. 50. 10.
+$
+$ Start of namelist input section ------------------------------------ $
+$   Starting with WAVEWATCH III version 2.00, the tunable parameters
+$   for source terms, propagation schemes, and numerics are read using
+$   namelists. Any namelist found in the folowing sections up to the
+$   end-of-section identifier string (see below) is temporarily written
+$   to ww3_grid.scratch, and read from there if necessary. Namelists
+$   not needed for the given switch settings will be skipped
+$   automatically, and the order of the namelists is immaterial.
+$
+ &UG UGOBCAUTO = T,  EXPFSN = T   /
+ &REF1  REFCOAST=0.10, REFCOSP_STRAIGHT=4, REFFREQ=1., REFSUBGRID = 0.00  /
+ $
+$ Mandatory string to identify end of namelist input section.
+$
+END OF NAMELISTS
+$
+$ Define grid -------------------------------------------------------- $
+$
+$ Five records containing :
+$
+$  1 Type of grid, coordinate system and type of closure: GSTRG, FLAGLL,
+$    CSTRG.  Grid closure can only be applied in spherical coordinates.
+$      GSTRG  : String indicating type of grid :
+$               'RECT'  : rectilinear
+$               'CURV'  : curvilinear
+$               'UNST'  : unstructured (triangle-based)
+$      FLAGLL : Flag to indicate coordinate system :
+$               T  : Spherical (lon/lat in degrees)
+$               F  : Cartesian (meters)
+$      CSTRG  : String indicating the type of grid index space closure :
+$               'NONE'  : No closure is applied
+$               'SMPL'  : Simple grid closure : Grid is periodic in the
+$                       : i-index and wraps at i=NX+1. In other words,
+$                       : (NX+1,J) => (1,J). A grid with simple closure
+$                       : may be rectilinear or curvilinear.
+$               'TRPL'  : Tripole grid closure : Grid is periodic in the
+$                       : i-index and wraps at i=NX+1 and has closure at
+$                       : j=NY+1. In other words, (NX+1,J<=NY) => (1,J)
+$                       : and (I,NY+1) => (MOD(NX-I+1,NX)+1,NY). Tripole
+$                       : grid closure requires that NX be even. A grid
+$                       : with tripole closure must be curvilinear.
+$  2 NX, NY. As the outer grid lines are always defined as land
+$    points, the minimum size is 3x3.
+$
+$
+ 'UNST' T 'NONE'
+$
+    4.0 0.30  20  -1. 4 1 '(20f10.2)'  'NAME' '../data_inp/saopaulo.msh'
+$
+$ If the above unit number equals 10, the bottom data is read from
+$ this file and follows below (no intermediate comment lines allowed).
+$
+$
+$
+$ *** NOTE size of fields is always NX * NY                        ***
+$
+   10 3 1 '(....)' 'PART' 'mapsta.inp'
+$
+$ Input boundary points from segment data ( FROM = PART ) ------------ $
+$   An unlimited number of lines identifying points at which input
+$   boundary conditions are to be defined. If the actual input data is
+$   not defined in the actual wave model run, the initial conditions
+$   will be applied as constant boundary conditions. Each line contains:
+$     Discrete grid counters (IX,IY) of the active point and a
+$     connect flag. If this flag is true, and the present and previous
+$     point are on a grid line or diagonal, all intermediate points
+$     are also defined as boundary points.
+$
+   1      23   T
+$
+$  Close list by defining point (0,0) (mandatory)
+$
+      0   0   F
+$
+$ Excluded grid points from segment data ( FROM != PART )
+$   First defined as lines, identical to the definition of the input
+$   boundary points, and closed the same way.
+$
+      0   0   F
+$
+$   Second, define a point in a closed body of sea points to remove
+$   the entire body of sea points. Also close by point (0,0)
+$
+      0   0
+$
+$ Sedimentary bottom map if namelist &SBT4 SEDMAPD50 = T
+$
+$     22  1. 1 1 '(f10.6)' 'NAME' 'SED.txt'
+$
+$ Output boundary points --------------------------------------------- $
+$ Output boundary points are defined as a number of straight lines,
+$ defined by its starting point (X0,Y0), increments (DX,DY) and number
+$ of points. A negative number of points starts a new output file.
+$ Note that this data is only generated if requested by the actual
+$ program. Example again for spherical grid in degrees. Note, these do
+$ not need to be defined for data transfer between grids in the multi
+$ grid driver.
+$
+$  Close list by defining line with 0 points (mandatory)
+$
+     0.    0.    0.    0.       0
+$
+$ -------------------------------------------------------------------- $
+$ End of input file                                                    $
+$ -------------------------------------------------------------------- $

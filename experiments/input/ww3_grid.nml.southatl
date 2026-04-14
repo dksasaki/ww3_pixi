@@ -1,0 +1,97 @@
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - ww3_grid.nml - Grid pre-processing                   !
+! -------------------------------------------------------------------- !
+
+&SPECTRUM_NML
+  SPECTRUM%XFR           =  1.1
+  SPECTRUM%FREQ1         =  0.05
+  SPECTRUM%NK            =  25
+  SPECTRUM%NTH           =  24
+  SPECTRUM%THOFF         =  0.5
+/
+
+&RUN_NML
+  RUN%FLCX            = T
+  RUN%FLCY            = T
+  RUN%FLCTH           = T
+  RUN%FLSOU           = T
+/
+
+&TIMESTEPS_NML
+  TIMESTEPS%DTMAX         =  900.
+  TIMESTEPS%DTXY          =  450.
+  TIMESTEPS%DTKTH         =  450.
+  TIMESTEPS%DTMIN         =   30.
+/
+
+&GRID_NML
+  GRID%NAME              =  'southatl wave grid'
+  GRID%NML               =  'ww3_grid.nml.southatl'
+  GRID%TYPE              =  'RECT'
+  GRID%COORD             =  'SPHE'
+  GRID%CLOS              =  'NONE'
+  GRID%ZLIM              =  -0.10
+  GRID%DMIN              =   2.50
+/
+
+&RECT_NML
+  RECT%NX                =  129
+  RECT%NY                =  139
+  RECT%SX                =  30.00
+  RECT%SY                =  30.00
+  RECT%SF                =  60.
+  RECT%X0                =  291.0000
+  RECT%Y0                =  -69.0000
+  RECT%SF0               =  1.
+/
+
+&DEPTH_NML
+  DEPTH%SF               =  0.001
+  DEPTH%FILENAME         =  '../data_inp/southatl.depth_ascii'
+  DEPTH%IDF              =  40
+  DEPTH%IDLA             =  1
+  DEPTH%IDFM             =  1
+  DEPTH%FORMAT           =  '(....)'
+/
+
+&OBST_NML
+  OBST%SF                =  0.01
+  OBST%FILENAME          =  '../data_inp/southatl.obstr_lev1'
+  OBST%IDF               =  50
+  OBST%IDLA              =  1
+  OBST%IDFM              =  1
+  OBST%FORMAT            =  '(....)'
+/
+
+&MASK_NML
+  MASK%FILENAME          =  '../data_inp/southatl.maskorig_ascii'
+  MASK%IDF               =  60
+  MASK%IDLA              =  1
+  MASK%IDFM              =  1
+  MASK%FORMAT            =  '(....)'
+/
+
+&INBND_COUNT_NML
+  INBND_COUNT%N_POINT    = 0
+/
+&INBND_POINT_NML
+/
+
+&EXCL_COUNT_NML
+  EXCL_COUNT%N_POINT     = 0
+  EXCL_COUNT%N_BODY      = 0
+/
+&EXCL_POINT_NML
+/
+&EXCL_BODY_NML
+/
+
+&OUTBND_COUNT_NML
+  OUTBND_COUNT%N_LINE    = 0
+/
+&OUTBND_LINE_NML
+/
+
+! -------------------------------------------------------------------- !
+! WAVEWATCH III - end of namelist                                      !
+! -------------------------------------------------------------------- !
