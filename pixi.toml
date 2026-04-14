@@ -19,3 +19,7 @@ cmake = ">=4.2.3,<5"
 CC = "gcc"
 FC = "gfortran"
 pixi_root = "$CONDA_PREFIX"
+PATH = "$PATH:WW3/build/bin"
+
+[activation]
+scripts = ["experiments/ww3_functions.sh"]

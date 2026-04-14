@@ -7,13 +7,13 @@ export ROOT_PIXI=$PWD
 git clone https://github.com/NOAA-EMC/WW3.git
 cd WW3
 mkdir build && cd build
-cmake .. -DSWITCH=${ROOT_PIXI}/WW3/model/bin/switch_NCEP_st2 -DCMAKE_INSTALL_PREFIX=install
+cmake .. -DSWITCH=${ROOT_PIXI}/WW3/model/bin/switch_UoM_nl1 -DCMAKE_INSTALL_PREFIX=install
 make
 make install
 
-cd ..
-sh model/bin/ww3_from_ftp.sh
+# cd ..
+# sh model/bin/ww3_from_ftp.sh
 
-cd regtests
+# cd regtests
 
-./bin/run_cmake_test ../model ww3_tp1.1
+# ./bin/run_cmake_test ../model ww3_tp1.1

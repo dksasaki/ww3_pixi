@@ -1,0 +1,8 @@
+experiments/work/*
+
+experiments/output/*
+experiments/data_inp/*
+experiments/boundary/*
+
+!**.empty
+!experiments/data_inp/*py
