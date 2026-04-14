@@ -24,6 +24,7 @@ All compilers, MPI, NetCDF-Fortran, CMake and ncview are managed by Pixi — no 
 ```
 .
 ├── pixi.toml                  # environment & dependency declaration
+├── install.sh                 # script to download and compile WW3 - notice that the formulation is hard coded
 └── experiments/
    ├── ww3_functions.sh       # helper functions       (source on activation IS FAILING)
    ├── input/                     # namelist/input templates
