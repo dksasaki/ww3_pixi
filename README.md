@@ -2,20 +2,6 @@
 
 A reproducible environment and helper-function library for running [NOAA-EMC WaveWatch III](https://github.com/NOAA-EMC/WW3) on Linux using [Pixi](https://pixi.sh).
 
----
-
-## Repository layout
-
-```
-.
-├── pixi.toml                  # environment & dependency declaration
-├── experiments/
-│   └── ww3_functions.sh       # helper functions (sourced on activation)
-├── input/                     # namelist / inp files per grid/component
-├── data_inp/                  # bathymetry, mask, forcing NetCDF files
-├── output/                    # gridded NetCDF results (written at runtime)
-└── boundary/                  # boundary spectra (written at runtime)
-```
 
 ---
 
@@ -30,6 +16,23 @@ A reproducible environment and helper-function library for running [NOAA-EMC Wav
 All compilers, MPI, NetCDF-Fortran, CMake and ncview are managed by Pixi — no system-level installs required.
 
 ---
+
+---
+
+## Repository layout
+
+```
+.
+├── pixi.toml                  # environment & dependency declaration
+├── experiments/
+│   └── ww3_functions.sh       # helper functions       (sourced on activation)
+├── input/                     # namelist/input templates
+├── data_inp/                  # preprocessed data      (not distributed here)
+├── work/                      # working directory      (you can delete everything here at any time)
+├── output/                    # gridded NetCDF results (written at runtime, delete at any time)
+└── boundary/                  # boundary spectra       (written at runtime, delete at any time)
+```
+
 
 ## Installation
 
@@ -75,15 +78,9 @@ The switch file (`switch_UoM_nl1`) was taken from the WW3 source tree. The curre
 > 3. Configures the build pointing to the switch file and sets the install prefix to `WW3/build/install`.
 > 4. Compiles and installs binaries under `WW3/build/bin/`.
 
-> **Note:** `NetCDF_ROOT` is set to `$CONDA_PREFIX/bin`, but CMake conventionally expects the prefix root (`$CONDA_PREFIX`). If the build fails to find NetCDF, try changing that line in `install.sh` to `export NetCDF_ROOT=$pixi_root`.
+
 
 All executables are automatically added to `PATH` for every subsequent `pixi shell` session via `[activation.env]` in `pixi.toml`.
-
-### 4. Verify
-
-```bash
-ww3_grid --version   # or any other binary
-```
 
 ---
 
@@ -114,14 +111,11 @@ Each executable reads its corresponding input file (`.nml` or `.inp`) from the *
 |---|---|---|---|
 | `ww3_grid.nml` | `ww3_grid` | `.nml` | Grid geometry, spectral discretization, timesteps, bathymetry/mask paths |
 | `ww3_prnc.nml` | `ww3_prnc` | `.nml` | NetCDF forcing variable mapping (field name, units, grid) |
-| `ww3_prep.inp` | `ww3_prep` | `.inp` only | Binary forcing file paths and field type |
 | `ww3_shel.nml` | `ww3_shel` | `.nml` | Run period, output times, output fields, forcing flags |
 | `ww3_multi.nml` | `ww3_multi` | `.nml` | Grid list, nesting topology, run period, output fields |
 | `ww3_ounf.nml` | `ww3_ounf` | `.nml` | Output time range, variables to extract, NetCDF version |
 | `ww3_ounp.nml` | `ww3_ounp` | `.nml` | Point output type (spectra / mean params), time range, NetCDF version |
 | `ww3_bounc.nml` | `ww3_bounc` | `.nml` | Source spectral file and target boundary definition |
-| `ww3_trnc.nml` | `ww3_trnc` | `.nml` | Target truncation time for restart file |
-| `ww3_uprstr.inp` | `ww3_uprstr` | `.inp` only | Field updates to apply to restart file |
 
 
 
@@ -133,39 +127,37 @@ Enter the working directory for your experiment and source the helpers (already 
 
 ```bash
 pixi shell
-cd experiments/<your_case>/work
+cd experiments/work
+source ../ww3_functions.sh
 ```
 
-The `ww3_functions.sh` script is sourced automatically on every `pixi shell` activation (declared in `[activation].scripts`), so all functions listed below are available without any extra step.
-
-### Full multi-grid + unstructured example
-
-The `if [[ "${BASH_SOURCE[0]}" == "${0}" ]]` block at the bottom of `ww3_functions.sh` is the **standalone driver** and shows the canonical execution order:
+The `ww3_functions.sh` contain several functions that link input namelist to `experiments/work` and use the executables we compiled earlier, Below is an example of how to prepare a nested Global + South Atlantic Grid.
 
 
 
 ```
-prepare_grid_nml  global southatl wind ice
-prepare_grid_inp  points.global
+    prepare_grid_nml global
+    prepare_grid_nml southatl
+    prepare_grid_nml wind
+    prepare_grid_nml ice
+    prepare_grid_inp points.global
 
-prepare_input_data_nml  wind ice
+    prepare_input_data_nml wind
+    prepare_input_data_nml ice
 
-run_model_multi   multi 20          # 20 MPI ranks
+    run_model_multi multi 20
 
-export_data_nc    global southatl
-export_data_pt    points
+    export_data_nc global
+    export_data_nc southatl
+    export_data_pt points
 
-# unstructured regional nest
-prepare_grid_nml   saopaulo
-create_boundaries_unstr saopaulo
-prepare_input_data_nml  wind
-run_model_unstr    saopaulo 8       # 8 MPI ranks
-
-export_data_nc     saopaulo
+    mv glob*nc   ../output
+    mv south*nc  ../output
+    mv ww3.BOUND*nc ../boundary
 ```
 
 
-Below is the workflow we are using
+Below is a visual diagram (not compreehensive of what we are doing)
 
 
 ```mermaid
@@ -217,119 +209,9 @@ flowchart TD
 
 ---
 
-## Helper function reference (`experiments/ww3_functions.sh`)
 
-The script is **not** a self-contained runner — it is a library of thin wrappers around WW3 binaries. Each function follows the same contract: receive a grid/component `name`, set up symlinks and copy the right namelist, run the binary, then clean up.
+The ww3_function.sh is **not** a self-contained runner — it is a library of thin wrappers around WW3 binaries. Each function follows the same contract: receive a grid/component `name`, set up symlinks and copy the right namelist, run the binary, then clean up. For details on each function, the reader is referred to `ww3_functions.sh`.
 
----
-
-### `prepare_grid_nml <name>`
-
-Prepares a structured grid using a **namelist** input file.
-
-```
-../input/ww3_grid.nml.<name>   →   ww3_grid.nml   (symlinked)
-../data_inp/<name>.depth       →   symlinked in CWD
-../data_inp/<name>.mask        →   symlinked in CWD
-```
-
-Runs `ww3_grid`, captures output to `ww3_grid.<name>.out`, and renames the result `mod_def.ww3` → `mod_def.<basename>` (the part before the first `.`).
-
----
-
-### `prepare_grid_inp <name>`
-
-Same as above but uses a legacy **`.inp`** input file instead of a namelist. Useful for grids (e.g. point lists) that don't yet have a namelist equivalent.
-
----
-
-### `prepare_input_data_nml <name>`
-
-Pre-processes a forcing field (wind, ice, current…) into WW3 binary format using `ww3_prnc` and a **namelist** config.
-
-```
-../data_inp/<name>.nc          →   symlinked
-mod_def.<name>                 →   mod_def.ww3 (symlinked)
-../input/ww3_prnc.nml.<name>  →   ww3_prnc.nml (copied, made writable)
-```
-
-Output `<name>.ww3` is renamed to `<name>.<name>` to avoid collisions when multiple fields are processed in the same directory.
-
----
-
-### `prepare_input_data_inp <name>`
-
-Same as above using a legacy **`.inp`** file.
-
----
-
-### `run_model_multi <name> <nprocs>`
-
-Runs the **multi-grid propagation** (`ww3_multi`) with `<nprocs>` MPI ranks.
-
-```
-../data_inp/points.list        →   copied as points.list
-../input/ww3_multi.nml.<name> →   ww3_multi.nml (copied)
-mpiexec -np <nprocs> ww3_multi
-```
-
----
-
-### `run_model_unstr <name> <nprocs>`
-
-Runs the **unstructured-grid shell** (`ww3_shel`) with `<nprocs>` MPI ranks.
-
-```
-../input/ww3_shel.nml.<name>  →   ww3_shel.nml (copied)
-mpiexec -np <nprocs> ./ww3_shel
-```
-
-Note the explicit `./` — the binary must be in the current working directory or reachable from `PATH`.
-
----
-
-### `export_data_nc <name>`
-
-Exports gridded output to NetCDF using `ww3_ounf`.
-
-```
-mod_def.<name>                 →   mod_def.ww3 (symlinked)
-out_grd.<name>                 →   out_grd.ww3 (symlinked)
-../input/ww3_ounf.nml.<name>  →   ww3_ounf.nml (copied)
-```
-
----
-
-### `export_data_pt <name>`
-
-Exports point/station output to NetCDF using `ww3_ounp`.
-
-```
-mod_def.<name>                 →   mod_def.ww3 (symlinked)
-out_pnt.<name>                 →   out_pnt.ww3 (symlinked)
-../input/ww3_ounp.inp.<name>  →   ww3_ounp.inp (copied)
-```
-
----
-
-### `create_boundaries_unstr <name>`
-
-Extracts boundary spectra from a global/regional run to force an unstructured nest, using `ww3_bounc`.
-
-```
-mod_def.<name>                  →   mod_def.ww3 (symlinked)
-../input/ww3_bounc.nml.<name>  →   ww3_bounc.nml (symlinked)
-```
-
-Output logged to `ww3_bounc.out.<name>`.
-
----
-
-### `unlink_files`
-
-Cleanup helper. Removes `mod_def.ww3`, `ww3_prnc.nml` symlinks and deletes `wind.wind`.
-
----
 
 ## Environment variables set by Pixi
 
