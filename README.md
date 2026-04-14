@@ -25,7 +25,7 @@ All compilers, MPI, NetCDF-Fortran, CMake and ncview are managed by Pixi — no 
 .
 ├── pixi.toml                  # environment & dependency declaration
 ├── experiments/
-│   └── ww3_functions.sh       # helper functions       (sourced on activation)
+│   └── ww3_functions.sh       # helper functions       (source on activation IS FAILING)
 ├── input/                     # namelist/input templates
 ├── data_inp/                  # preprocessed data      (not distributed here)
 ├── work/                      # working directory      (you can delete everything here at any time)
