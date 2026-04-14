@@ -142,6 +142,32 @@ The `ww3_functions.sh` script is sourced automatically on every `pixi shell` act
 
 The `if [[ "${BASH_SOURCE[0]}" == "${0}" ]]` block at the bottom of `ww3_functions.sh` is the **standalone driver** and shows the canonical execution order:
 
+
+
+```
+prepare_grid_nml  global southatl wind ice
+prepare_grid_inp  points.global
+
+prepare_input_data_nml  wind ice
+
+run_model_multi   multi 20          # 20 MPI ranks
+
+export_data_nc    global southatl
+export_data_pt    points
+
+# unstructured regional nest
+prepare_grid_nml   saopaulo
+create_boundaries_unstr saopaulo
+prepare_input_data_nml  wind
+run_model_unstr    saopaulo 8       # 8 MPI ranks
+
+export_data_nc     saopaulo
+```
+
+
+Below is the workflow we are using
+
+
 ```mermaid
 flowchart TD
     subgraph P1["Phase 1 — Grid preparation"]
@@ -187,27 +213,6 @@ flowchart TD
     E1 & E2 & E3 --> UL
     UL --> P5
     SG --> BC --> FW --> RU --> EU
-```
-
-
-```
-prepare_grid_nml  global southatl wind ice
-prepare_grid_inp  points.global
-
-prepare_input_data_nml  wind ice
-
-run_model_multi   multi 20          # 20 MPI ranks
-
-export_data_nc    global southatl
-export_data_pt    points
-
-# unstructured regional nest
-prepare_grid_nml   saopaulo
-create_boundaries_unstr saopaulo
-prepare_input_data_nml  wind
-run_model_unstr    saopaulo 8       # 8 MPI ranks
-
-export_data_nc     saopaulo
 ```
 
 ---
