@@ -157,7 +157,7 @@ The `ww3_functions.sh` contain several functions that link input namelist to `ex
 ```
 
 
-Below is a visual diagram (not compreehensive of what we are doing)
+Below is a visual diagram (not compreehensive of what we are doing) - CURRENTLY, THE UNSTRUCTURED PART IS NOT WORKING
 
 
 ```mermaid
