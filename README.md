@@ -12,6 +12,9 @@ A reproducible environment and helper-function library for running [NOAA-EMC Wav
 
 All compilers, MPI, NetCDF-Fortran, CMake, and ncview are managed by Pixi — no system-level installs required.
 
+
+**Note**: This repository is set up as a working example using realistic wind and ice forcing with a specific WW3 physics configuration (ST6 + SNL1). WW3 is a flexible framework and supports a wide range of setups — idealized simulations, different source term packages, alternative grid configurations, and more. Treat this as a starting point, not a reference configuration.
+
 ## Quick start
 
 ```bash
