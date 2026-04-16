@@ -26,6 +26,8 @@ cd experiments/work
 source ../ww3_functions.sh
 ```
 
+Download the [datasets](https://www.dropbox.com/scl/fi/ay13wehh0en4yfboa8hun/data.tar.gz?rlkey=g59yea1o2ex5xafllqkw7qxlg&st=q47uo56v&dl=0)  and copy its contents to `experiments/data_inp`.
+
 From there, a typical nested Global + South Atlantic run looks like:
 
 ```bash
